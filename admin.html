@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - INR Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0b0b0b; color: #f5f5f5; padding: 20px; }
+        .admin-container { max-width: 800px; margin: 0 auto; background: #141414; border: 1px solid #d4af37; border-radius: 16px; padding: 20px; }
+        h2 { color: #ffd700; margin-bottom: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #222; font-size: 14px; }
+        th { color: #ffd700; background: #1a1a1a; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-approve { background: #28a745; color: #fff; margin-right: 5px; }
+        .btn-reject { background: #dc3545; color: #fff; }
+    </style>
+</head>
+<body>
 
+    <div class="admin-container">
+        <h2>🛠️ Admin Panel - Pending Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Amount (₹)</th>
+                    <th>UTR / User</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="transaction-list">
+                <tr><td colspan="5" style="text-align: center; color: #aaa;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function fetchPendingTransactions() {
+            const { data, error } = await supabaseClient.from('transactions').select('*, users(mobile)').eq('status', 'pending');
+            const tbody = document.getElementById('transaction-list');
+            tbody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #aaa;">No pending requests found.</td></tr>`;
+                return;
+            }
+
+            data.forEach(tx => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-transform: uppercase; color: ${tx.type === 'deposit' ? '#28a745' : '#ffc107'};">${tx.type}</td>
+                    <td>₹${tx.amount}</td>
+                    <td>${tx.utr_number || 'N/A'}<br><small style="color:#888;">${tx.users ? tx.users.mobile : ''}</small></td>
+                    <td>${tx.status}</td>
+                    <td>
+                        <button class="btn-action btn-approve" onclick="updateTx('${tx.id}', '${tx.user_id}', ${tx.amount}, '${tx.type}', 'approved')">Approve</button>
+                        <button class="btn-action btn-reject" onclick="updateTx('${tx.id}', null, 0, '${tx.type}', 'rejected')">Reject</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function updateTx(txId, userId, amount, type, newStatus) {
+            await supabaseClient.from('transactions').update({ status: newStatus }).eq('id', txId);
+
+            if (newStatus === 'approved' && type === 'deposit' && userId) {
+                const { data: userData } = await supabaseClient.from('users').select('balance').eq('id', userId).single();
+                if (userData) {
+                    const newBal = parseFloat(userData.balance) + parseFloat(amount);
+                    await supabaseClient.from('users').update({ balance: newBal }).eq('id', userId);
+                }
+            }
+
+            alert(`Transaction ${newStatus}!`);
+            fetchPendingTransactions();
+        }
+
+        window.onload = fetchPendingTransactions;
+    </script>
+</body>
+</html>
