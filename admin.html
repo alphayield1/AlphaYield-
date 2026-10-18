@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - INR Management</title>
+    <title>AlphaYield - Admin Panel</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0b0b0b; color: #f5f5f5; padding: 20px; }
-        .admin-container { max-width: 800px; margin: 0 auto; background: #141414; border: 1px solid #d4af37; border-radius: 16px; padding: 20px; }
-        h2 { color: #ffd700; margin-bottom: 20px; text-align: center; }
+        .admin-container { max-width: 800px; margin: 0 auto; background: #141414; border: 1px solid #d4af37; border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15); }
+        h2 { color: #ffd700; margin-bottom: 20px; text-align: center; letter-spacing: 1px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #222; font-size: 14px; }
         th { color: #ffd700; background: #1a1a1a; }
@@ -20,23 +20,26 @@
 <body>
 
     <div class="admin-container">
-        <h2>🛠️ Admin Panel - Pending Transactions</h2>
+        <h2>🛠️ ALPHAYIELD - ADMIN PANEL</h2>
+        <p style="font-size: 13px; color: #aaa; margin-bottom: 15px; text-align: center;">Manage pending user deposits and withdrawal requests.</p>
+        
         <table>
             <thead>
                 <tr>
                     <th>Type</th>
                     <th>Amount (₹)</th>
-                    <th>UTR / User</th>
+                    <th>UTR / User Mobile</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody id="transaction-list">
-                <tr><td colspan="5" style="text-align: center; color: #aaa;">Loading...</td></tr>
+                <tr><td colspan="5" style="text-align: center; color: #aaa;">Loading pending requests...</td></tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'YOUR_SUPABASE_URL';
@@ -44,9 +47,18 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function fetchPendingTransactions() {
-            const { data, error } = await supabaseClient.from('transactions').select('*, users(mobile)').eq('status', 'pending');
+            const { data, error } = await supabaseClient
+                .from('transactions')
+                .select('*, users(mobile)')
+                .eq('status', 'pending');
+
             const tbody = document.getElementById('transaction-list');
             tbody.innerHTML = '';
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center;">Error: ${error.message}</td></tr>`;
+                return;
+            }
 
             if (!data || data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #aaa;">No pending requests found.</td></tr>`;
@@ -56,9 +68,9 @@
             data.forEach(tx => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="text-transform: uppercase; color: ${tx.type === 'deposit' ? '#28a745' : '#ffc107'};">${tx.type}</td>
-                    <td>₹${tx.amount}</td>
-                    <td>${tx.utr_number || 'N/A'}<br><small style="color:#888;">${tx.users ? tx.users.mobile : ''}</small></td>
+                    <td style="text-transform: uppercase; font-weight: bold; color: ${tx.type === 'deposit' ? '#28a745' : '#ffc107'};">${tx.type}</td>
+                    <td>₹${parseFloat(tx.amount).toLocaleString('en-IN')}</td>
+                    <td>${tx.utr_number || 'N/A'}<br><small style="color:#888;">+91 ${tx.users ? tx.users.mobile : 'Unknown'}</small></td>
                     <td>${tx.status}</td>
                     <td>
                         <button class="btn-action btn-approve" onclick="updateTx('${tx.id}', '${tx.user_id}', ${tx.amount}, '${tx.type}', 'approved')">Approve</button>
@@ -70,17 +82,35 @@
         }
 
         async function updateTx(txId, userId, amount, type, newStatus) {
-            await supabaseClient.from('transactions').update({ status: newStatus }).eq('id', txId);
+            // 1. Update transaction status
+            const { error: txError } = await supabaseClient
+                .from('transactions')
+                .update({ status: newStatus })
+                .eq('id', txId);
 
+            if (txError) {
+                alert('Failed to update: ' + txError.message);
+                return;
+            }
+
+            // 2. Agar deposit approve hua hai toh user ke balance mein amount add karein
             if (newStatus === 'approved' && type === 'deposit' && userId) {
-                const { data: userData } = await supabaseClient.from('users').select('balance').eq('id', userId).single();
-                if (userData) {
-                    const newBal = parseFloat(userData.balance) + parseFloat(amount);
-                    await supabaseClient.from('users').update({ balance: newBal }).eq('id', userId);
+                const { data: userData, error: userFetchError } = await supabaseClient
+                    .from('users')
+                    .select('balance')
+                    .eq('id', userId)
+                    .single();
+
+                if (!userFetchError && userData) {
+                    const newBalance = parseFloat(userData.balance) + parseFloat(amount);
+                    await supabaseClient
+                        .from('users')
+                        .update({ balance: newBalance })
+                        .eq('id', userId);
                 }
             }
 
-            alert(`Transaction ${newStatus}!`);
+            alert(`Transaction ${newStatus} successfully!`);
             fetchPendingTransactions();
         }
 
