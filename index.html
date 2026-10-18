@@ -3,25 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlphaYield - Complete Platform</title>
+    <title>AlphaYield - Institutional Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0b0b0b; color: #f5f5f5; padding: 15px; }
         .container { max-width: 480px; margin: 0 auto; background: #141414; border: 1px solid #d4af37; border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15); margin-bottom: 50px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-size: 18px; font-weight: bold; color: #d4af37; letter-spacing: 1px; }
+        .logo { font-size: 18px; font-weight: bold; color: #ffd700; letter-spacing: 1px; }
         .balance-card { background: linear-gradient(135deg, #1f1a05 0%, #111 100%); border: 1px solid #d4af37; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; }
         .balance-title { font-size: 13px; color: #aaa; margin-bottom: 5px; }
         .balance-amount { font-size: 30px; font-weight: bold; color: #ffd700; }
         .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 14px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 14px; text-decoration: none; display: inline-block; }
         .btn-deposit { background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%); color: #000; }
         .btn-withdraw { background: transparent; border: 1px solid #d4af37; color: #ffd700; }
-        
-        /* Sections */
-        .section-box { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .section-title { font-size: 15px; color: #ffd700; font-weight: bold; margin-bottom: 10px; }
-        .form-control { width: 100%; padding: 10px; margin-bottom: 10px; background: #111; border: 1px solid #444; color: #fff; border-radius: 6px; }
         
         /* Navigation tabs */
         .nav-tabs { display: flex; justify-content: space-around; background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
@@ -30,6 +25,11 @@
         
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        
+        .section-box { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        .section-title { font-size: 15px; color: #ffd700; font-weight: bold; margin-bottom: 10px; }
+        .form-control { width: 100%; padding: 10px; margin-bottom: 10px; background: #111; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; }
+        .logout-btn { background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -38,19 +38,22 @@
         <!-- Header -->
         <div class="header">
             <div class="logo">⚡ ALPHAYIELD</div>
-            <div id="user-mobile" style="font-size: 13px; color: #aaa;">Loading...</div>
+            <div>
+                <span id="user-mobile" style="font-size: 12px; color: #aaa; margin-right: 8px;">Loading...</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
         </div>
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('home')">Home</button>
-            <button class="tab-btn" onclick="switchTab('deposit')">Deposit</button>
-            <button class="tab-btn" onclick="switchTab('withdraw')">Withdraw</button>
-            <button class="tab-btn" onclick="switchTab('plans')">Plans</button>
-            <button class="tab-btn" onclick="switchTab('referral')">Referral</button>
+            <button class="tab-btn active" onclick="switchTab('home', event)">Home</button>
+            <button class="tab-btn" onclick="switchTab('deposit', event)">Deposit</button>
+            <button class="tab-btn" onclick="switchTab('withdraw', event)">Withdraw</button>
+            <button class="tab-btn" onclick="switchTab('plans', event)">Plans</button>
+            <button class="tab-btn" onclick="switchTab('team', event)">Team</button>
         </div>
 
-        <!-- TAB 1: HOME / DASHBOARD -->
+        <!-- TAB 1: HOME -->
         <div id="tab-home" class="tab-content active">
             <div class="balance-card">
                 <div class="balance-title">Total Balance (INR)</div>
@@ -58,13 +61,13 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-deposit" onclick="switchTab('deposit')">Deposit ₹</button>
-                <button class="btn btn-withdraw" onclick="switchTab('withdraw')">Withdraw ₹</button>
+                <button class="btn btn-deposit" onclick="switchTab('deposit', event)">Deposit ₹</button>
+                <button class="btn btn-withdraw" onclick="switchTab('withdraw', event)">Withdraw ₹</button>
             </div>
 
             <div class="section-box">
                 <div class="section-title">🔥 200-Hour Benefit Engine</div>
-                <p style="font-size: 12px; color: #ccc;">Active automated yield generation running with 0.50% hourly return.</p>
+                <p style="font-size: 12px; color: #ccc;">Institutional automated yield generation active with 0.50% hourly return.</p>
             </div>
         </div>
 
@@ -72,7 +75,7 @@
         <div id="tab-deposit" class="tab-content">
             <div class="section-box">
                 <div class="section-title">💳 Deposit Funds (INR)</div>
-                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Pay via UPI/QR and enter your 12-digit UTR number below.</p>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Pay via UPI/QR and submit your 12-digit UTR number.</p>
                 <input type="number" id="depAmount" class="form-control" placeholder="Enter Amount (e.g. 1000)">
                 <input type="text" id="depUtr" class="form-control" placeholder="Enter 12-digit UTR Number">
                 <button class="btn btn-deposit" style="width: 100%;" onclick="submitDeposit()">Submit Deposit</button>
@@ -83,7 +86,7 @@
         <div id="tab-withdraw" class="tab-content">
             <div class="section-box">
                 <div class="section-title">🏦 Request Withdrawal</div>
-                <input type="number" id="withAmount" class="form-control" placeholder="Enter Withdrawal Amount">
+                <input type="number" id="withAmount" class="form-control" placeholder="Enter Amount">
                 <button class="btn btn-deposit" style="width: 100%;" onclick="submitWithdraw()">Submit Withdrawal</button>
             </div>
         </div>
@@ -101,13 +104,18 @@
             </div>
         </div>
 
-        <!-- TAB 5: REFERRAL -->
-        <div id="tab-referral" class="tab-content">
+        <!-- TAB 5: REFERRAL TEAM -->
+        <div id="tab-team" class="tab-content">
             <div class="section-box">
-                <div class="section-title">👥 5-Tier Community Referral</div>
-                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Share your referral code and earn level commissions!</p>
+                <div class="section-title">👥 Referral & Team Network</div>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 8px;">Share your link and earn 5-tier community commissions:</p>
                 <input type="text" id="refCodeDisplay" class="form-control" readonly value="Loading...">
-                <button class="btn btn-deposit" style="width: 100%;" onclick="copyRefLink()">Copy Referral Link</button>
+                <button class="btn btn-deposit" style="width: 100%; margin-bottom: 15px;" onclick="copyRefLink()">Copy Referral Link</button>
+                
+                <div style="border-top: 1px solid #333; padding-top: 10px;">
+                    <div style="font-size: 13px; color: #ffd700; font-weight: bold; margin-bottom: 5px;">Your Direct Team Members:</div>
+                    <div id="teamMemberList" style="font-size: 12px; color: #aaa;">Loading team...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -115,25 +123,28 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Supabase Credentials
         const SUPABASE_URL = 'YOUR_SUPABASE_URL';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const loggedInMobile = localStorage.getItem('user_mobile') || '8937985224';
+        const loggedInMobile = localStorage.getItem('user_mobile');
+        if(!loggedInMobile) {
+            window.location.href = 'auth.html'; // Redirect to login if not logged in
+        }
+
         let currentUserId = null;
         let currentUserRefCode = null;
 
-        // Tab Switching Logic
-        function switchTab(tabName) {
+        function switchTab(tabName, event) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
             document.getElementById('tab-' + tabName).classList.add('active');
-            event.target.classList.add('active');
+            if(event && event.target) {
+                event.target.classList.add('active');
+            }
         }
 
-        // Fetch User Data
         async function fetchUserData() {
             const { data, error } = await supabaseClient
                 .from('users')
@@ -143,14 +154,35 @@
 
             if (data) {
                 currentUserId = data.id;
-                currentUserRefCode = data.referral_code || 'AGRO123';
+                currentUserRefCode = data.referral_code;
                 document.getElementById('user-balance').innerText = `₹ ${parseFloat(data.balance).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
                 document.getElementById('user-mobile').innerText = `+91 ${data.mobile}`;
-                document.getElementById('refCodeDisplay').value = `https://alphayield.io/register?ref=${currentUserRefCode}`;
+                document.getElementById('refCodeDisplay').value = window.location.origin + `/auth.html?ref=${currentUserRefCode}`;
+                
+                fetchTeamMembers(currentUserRefCode);
             }
         }
 
-        // Deposit Action
+        async function fetchTeamMembers(refCode) {
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('mobile, created_at')
+                .eq('invited_by', refCode);
+
+            const teamListDiv = document.getElementById('teamMemberList');
+            if(!data || data.length === 0) {
+                teamListDiv.innerHTML = 'No referrals yet. Share your link!';
+                return;
+            }
+
+            let html = '<ul style="padding-left: 15px;">';
+            data.forEach(member => {
+                html += `<li>+91 ${member.mobile} <span style="color:#666; font-size:11px;">(${new Date(member.created_at).toLocaleDateString()})</span></li>`;
+            });
+            html += '</ul>';
+            teamListDiv.innerHTML = html;
+        }
+
         async function submitDeposit() {
             const amount = document.getElementById('depAmount').value;
             const utr = document.getElementById('depUtr').value;
@@ -164,7 +196,6 @@
             else { alert('Deposit request submitted successfully!'); document.getElementById('depAmount').value=''; document.getElementById('depUtr').value=''; switchTab('home'); }
         }
 
-        // Withdrawal Action
         async function submitWithdraw() {
             const amount = document.getElementById('withAmount').value;
             if(!amount) return alert('Please enter amount!');
@@ -177,17 +208,14 @@
             else { alert('Withdrawal requested successfully!'); document.getElementById('withAmount').value=''; switchTab('home'); }
         }
 
-        // Plan Buying Action
         async function buyPlan() {
             const price = parseFloat(document.getElementById('selectedPlan').value);
             const { data: user } = await supabaseClient.from('users').select('balance').eq('id', currentUserId).single();
             
             if(user.balance < price) return alert('Insufficient balance! Please deposit first.');
 
-            // Deduct balance
             await supabaseClient.from('users').update({ balance: user.balance - price }).eq('id', currentUserId);
             
-            // Insert investment
             const expires = new Date(new Date().getTime() + (200 * 3600 * 1000)).toISOString();
             await supabaseClient.from('user_investments').insert([{ user_id: currentUserId, invested_amount: price, expires_at: expires }]);
             
@@ -195,13 +223,16 @@
             fetchUserData();
             switchTab('home');
         }
-
-        // Copy Referral Link
         function copyRefLink() {
             const copyText = document.getElementById('refCodeDisplay');
             copyText.select();
             navigator.clipboard.writeText(copyText.value);
             alert('Referral link copied to clipboard!');
+        }
+
+        function logout() {
+            localStorage.removeItem('user_mobile');
+            window.location.href = 'auth.html';
         }
 
         window.onload = fetchUserData;
