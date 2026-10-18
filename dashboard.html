@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Institutional Grade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0b0b0b;
+            color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #141414;
+            border: 1px solid #d4af37;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d4af37;
+            letter-spacing: 1px;
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #1f1a05 0%, #111 100%);
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .balance-title {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-deposit {
+            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+            color: #000;
+        }
+        .btn-withdraw {
+            background: transparent;
+            border: 1px solid #d4af37;
+            color: #ffd700;
+        }
+        .engine-card {
+            background: #1a1a1a;
+            border-left: 4px solid #ffd700;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .engine-title {
+            font-size: 16px;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .engine-info {
+            font-size: 13px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">⚡ APP DASHBOARD</div>
+            <div id="user-mobile" style="font-size: 13px; color: #aaa;">+91 89379...</div>
+        </div>
+
+        <!-- Total Balance Card -->
+        <div class="balance-card">
+            <div class="balance-title">Total Balance (INR)</div>
+            <div class="balance-amount">₹ 12,450.00</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="btn-group">
+            <a href="#" class="btn btn-deposit">Deposit ₹</a>
+            <a href="#" class="btn btn-withdraw">Withdraw ₹</a>
+        </div>
+
+        <!-- 200-Hour Benefit Engine Box -->
+        <div class="engine-card">
+            <div class="engine-title">🔥 200-Hour Benefit Engine</div>
+            <div class="engine-info">
+                <span>Active Plan: 200-Hour Return</span>
+                <span style="color: #ffd700;">Running</span>
+            </div>
+            <div class="engine-info">
+                <span>Hourly Return: 0.50%</span>
+                <span>Time Left: 145h 32m</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+  </html>
+  
